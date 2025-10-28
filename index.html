@@ -930,3 +930,911 @@
     </script>
 </body>
 </html>
+<!-- Admin Login Button (Navigation mein add karo) -->
+<button class="btn btn-warning ms-2" onclick="showAdminLogin()">
+    <i class="fas fa-cog me-2"></i>Admin
+</button>
+
+<!-- Admin Login Modal -->
+<div class="modal fade" id="adminLoginModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title">Admin Login</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="adminLoginForm">
+                    <div class="mb-3">
+                        <label class="form-label">Admin Password</label>
+                        <input type="password" class="form-control" id="adminPassword" placeholder="Enter admin password" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100">Login to Admin Panel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Panel Section -->
+<section class="admin-panel container-fluid" id="adminPanel" style="display: none; padding-top: 80px;">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2><i class="fas fa-crown me-2"></i>Admin Panel</h2>
+                    <button class="btn btn-danger" onclick="logoutAdmin()">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout Admin
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card bg-primary">
+                    <div class="text-center">
+                        <h4 id="totalUsers">0</h4>
+                        <p>Total Users</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-success">
+                    <div class="text-center">
+                        <h4 id="totalFunds">$0</h4>
+                        <p>Total Funds</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-warning">
+                    <div class="text-center">
+                        <h4 id="activeTrades">0</h4>
+                        <p>Active Trades</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-info">
+                    <div class="text-center">
+                        <h4 id="pendingWithdrawals">0</h4>
+                        <p>Pending Withdrawals</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management -->
+        <div class="row">
+            <div class="col-12">
+                <div class="stats-card">
+                    <h4 class="mb-4"><i class="fas fa-users me-2"></i>User Management</h4>
+                    
+                    <!-- Add Funds to User -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Add Funds to User</h6>
+                            <div class="input-group mb-3">
+                                <input type="email" class="form-control" id="userEmail" placeholder="User Email">
+                                <input type="number" class="form-control" id="fundAmount" placeholder="Amount">
+                                <button class="btn btn-success" onclick="addFundsToUser()">
+                                    <i class="fas fa-plus me-2"></i>Add Funds
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Quick Actions</h6>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary btn-sm" onclick="addFundsToAll(100)">Add $100 to All</button>
+                                <button class="btn btn-warning btn-sm" onclick="resetAllFunds()">Reset All Funds</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteAllUsers()">Delete All Users</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Users List -->
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Balance</th>
+                                    <th>Registered</th>
+                                    <th>Last Seen</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                <!-- Users will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Controls -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="stats-card">
+                    <h5><i class="fas fa-cog me-2"></i>System Controls</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Global Profit Percentage</label>
+                        <input type="number" class="form-control" id="globalProfit" value="0.7" step="0.1">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Daily Trading Limit</label>
+                        <input type="number" class="form-control" id="dailyLimit" value="50000">
+                    </div>
+                    <button class="btn btn-primary w-100" onclick="updateSystemSettings()">
+                        Update Settings
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="stats-card">
+                    <h5><i class="fas fa-chart-bar me-2"></i>Platform Statistics</h5>
+                    <div id="platformStats">
+                        <p>Total Deposits: <span id="totalDeposits">$0</span></p>
+                        <p>Total Withdrawals: <span id="totalWithdrawals">$0</span></p>
+                        <p>Platform Profit: <span id="platformProfit">$0</span></p>
+                        <p>Active Sessions: <span id="activeSessions">0</span></p>
+                    </div>
+                    <button class="btn btn-info w-100 mt-3" onclick="refreshStats()">
+                        <i class="fas fa-sync me-2"></i>Refresh Stats
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Admin Configuration
+const ADMIN_PASSWORD = "admin123"; // Change this password
+let isAdminLoggedIn = false;
+
+// Show Admin Login
+function showAdminLogin() {
+    new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
+}
+
+// Admin Login
+document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const password = document.getElementById('adminPassword').value;
+    
+    if (password === ADMIN_PASSWORD) {
+        isAdminLoggedIn = true;
+        localStorage.setItem('adminLoggedIn', 'true');
+        document.getElementById('adminLoginModal').style.display = 'none';
+        document.querySelector('.modal-backdrop').remove();
+        showAdminPanel();
+        showNotification('Admin login successful!', 'success');
+    } else {
+        showNotification('Invalid admin password!', 'error');
+    }
+});
+
+// Show Admin Panel
+function showAdminPanel() {
+    document.getElementById('heroSection').style.display = 'none';
+    document.getElementById('dashboardSection').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    document.getElementById('userSection').style.display = 'none';
+    document.getElementById('userMenu').style.display = 'none';
+    
+    loadAdminData();
+}
+
+// Load Admin Data
+function loadAdminData() {
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    
+    // Update stats
+    document.getElementById('totalUsers').textContent = Object.keys(users).length;
+    
+    let totalFunds = 0;
+    Object.values(users).forEach(user => {
+        totalFunds += (user.balance || 0) + (user.tradingFunds || 0) + (user.stakingFunds || 0);
+    });
+    document.getElementById('totalFunds').textContent = '$' + totalFunds.toFixed(2);
+    
+    // Populate users table
+    const usersTable = document.getElementById('usersTable');
+    usersTable.innerHTML = '';
+    
+    Object.values(users).forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td>$${(user.balance || 0).toFixed(2)}</td>
+            <td>${user.registrationDate}</td>
+            <td>${user.lastSeen}</td>
+            <td>
+                <button class="btn btn-sm btn-success" onclick="addFundsToSpecificUser('${user.email}', 100)">+$100</button>
+                <button class="btn btn-sm btn-warning" onclick="addFundsToSpecificUser('${user.email}', 500)">+$500</button>
+                <button class="btn btn-sm btn-danger" onclick="resetUserFunds('${user.email}')">Reset</button>
+            </td>
+        `;
+        usersTable.appendChild(row);
+    });
+}
+
+// Add Funds to Specific User
+function addFundsToSpecificUser(email, amount) {
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    if (users[email]) {
+        users[email].balance = (users[email].balance || 0) + amount;
+        localStorage.setItem('users', JSON.stringify(users));
+        loadAdminData();
+        showNotification(`Added $${amount} to ${email}`, 'success');
+    }
+}
+
+// Add Funds to User (from input)
+function addFundsToUser() {
+    const email = document.getElementById('userEmail').value;
+    const amount = parseFloat(document.getElementById('fundAmount').value);
+    
+    if (!email || !amount) {
+        showNotification('Please enter both email and amount!', 'error');
+        return;
+    }
+    
+    addFundsToSpecificUser(email, amount);
+    
+    // Clear inputs
+    document.getElementById('userEmail').value = '';
+    document.getElementById('fundAmount').value = '';
+}
+
+// Add Funds to All Users
+function addFundsToAll(amount) {
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    Object.keys(users).forEach(email => {
+        users[email].balance = (users[email].balance || 0) + amount;
+    });
+    localStorage.setItem('users', JSON.stringify(users));
+    loadAdminData();
+    showNotification(`Added $${amount} to all users`, 'success');
+}
+
+// Reset User Funds
+function resetUserFunds(email) {
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    if (users[email]) {
+        users[email].balance = 0;
+        users[email].tradingFunds = 0;
+        users[email].stakingFunds = 0;
+        users[email].totalProfit = 0;
+        localStorage.setItem('users', JSON.stringify(users));
+        loadAdminData();
+        showNotification(`Reset funds for ${email}`, 'success');
+    }
+}
+
+// Reset All Funds
+function resetAllFunds() {
+    if (confirm('Are you sure you want to reset ALL user funds?')) {
+        const users = JSON.parse(localStorage.getItem('users')) || {};
+        Object.keys(users).forEach(email => {
+            users[email].balance = 0;
+            users[email].tradingFunds = 0;
+            users[email].stakingFunds = 0;
+            users[email].totalProfit = 0;
+        });
+        localStorage.setItem('users', JSON.stringify(users));
+        loadAdminData();
+        showNotification('All user funds reset!', 'success');
+    }
+}
+
+// Delete All Users
+function deleteAllUsers() {
+    if (confirm('Are you sure you want to delete ALL users? This cannot be undone!')) {
+        localStorage.removeItem('users');
+        loadAdminData();
+        showNotification('All users deleted!', 'success');
+    }
+}
+
+// Update System Settings
+function updateSystemSettings() {
+    const profit = document.getElementById('globalProfit').value;
+    const limit = document.getElementById('dailyLimit').value;
+    
+    localStorage.setItem('globalProfit', profit);
+    localStorage.setItem('dailyLimit', limit);
+    
+    showNotification('System settings updated!', 'success');
+}
+
+// Refresh Stats
+function refreshStats() {
+    loadAdminData();
+    showNotification('Statistics refreshed!', 'success');
+}
+
+// Logout Admin
+function logoutAdmin() {
+    isAdminLoggedIn = false;
+    localStorage.removeItem('adminLoggedIn');
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('heroSection').style.display = 'flex';
+    document.getElementById('userSection').style.display = 'block';
+    showNotification('Admin logged out!', 'success');
+}
+
+// Check Admin Login on Page Load
+document.addEventListener('DOMContentLoaded', function() {
+    if (localStorage.getItem('adminLoggedIn') === 'true') {
+        isAdminLoggedIn = true;
+        showAdminPanel();
+    }
+});
+
+// Global function for adding funds (for console use)
+window.addFundsToUserGlobal = function(email, amount) {
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    if (users[email]) {
+        users[email].balance = (users[email].balance || 0) + amount;
+        localStorage.setItem('users', JSON.stringify(users));
+        
+        // Update current user if they are the one
+        if (currentUser && currentUser.email === email) {
+            availableBalance += amount;
+            updateUserInfo();
+        }
+        
+        showNotification(`Added $${amount} to ${email}`, 'success');
+        return true;
+    }
+    showNotification('User not found!', 'error');
+    return false;
+};
+</script>
+
+<style>
+.admin-panel {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh;
+}
+
+.stats-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-card.bg-primary { background: linear-gradient(135deg, #007bff, #0056b3) !important; }
+.stats-card.bg-success { background: linear-gradient(135deg, #28a745, #1e7e34) !important; }
+.stats-card.bg-warning { background: linear-gradient(135deg, #ffc107, #e0a800) !important; }
+.stats-card.bg-info { background: linear-gradient(135deg, #17a2b8, #138496) !important; }
+
+.table-dark {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table-dark th {
+    border: none;
+    background: rgba(0, 188, 212, 0.3);
+}
+
+.table-dark td {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+</style>
+<!-- Admin Button in Navigation -->
+<button class="btn btn-warning ms-2" id="adminBtn" onclick="showAdminLogin()" style="display: none;">
+    <i class="fas fa-crown me-2"></i>Admin Panel
+</button>
+
+<!-- Admin Login Modal -->
+<div class="modal fade" id="adminLoginModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title">Admin Authentication</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="adminLoginForm">
+                    <div class="mb-3">
+                        <label class="form-label">Admin Password</label>
+                        <input type="password" class="form-control" id="adminPassword" placeholder="Enter admin password" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100">Access Admin Panel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Panel Section -->
+<section class="admin-panel container-fluid" id="adminPanel" style="display: none; padding-top: 80px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh;">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2><i class="fas fa-crown me-2"></i>Admin Control Panel</h2>
+                    <div>
+                        <span class="badge bg-success me-2" id="adminUserInfo">Logged in as: kaptansinghvr@gmail.com</span>
+                        <button class="btn btn-danger" onclick="logoutAdmin()">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout Admin
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card bg-primary">
+                    <div class="text-center p-3">
+                        <h3 id="totalUsers">0</h3>
+                        <p>Total Users</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-success">
+                    <div class="text-center p-3">
+                        <h3 id="totalFunds">$0</h3>
+                        <p>Total Funds</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-warning">
+                    <div class="text-center p-3">
+                        <h3 id="activeTrades">0</h3>
+                        <p>Active Trades</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-info">
+                    <div class="text-center p-3">
+                        <h3 id="pendingWithdrawals">0</h3>
+                        <p>Pending Withdrawals</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="stats-card">
+                    <h4 class="mb-4"><i class="fas fa-users-cog me-2"></i>User Management</h4>
+                    
+                    <!-- Quick Fund Actions -->
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <h6>Add Funds to Specific User</h6>
+                            <div class="input-group">
+                                <input type="email" class="form-control" id="userEmail" placeholder="Enter user email">
+                                <input type="number" class="form-control" id="fundAmount" placeholder="Amount in USD">
+                                <button class="btn btn-success" onclick="addFundsToUser()">
+                                    <i class="fas fa-money-bill-wave me-2"></i>Add Funds
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Bulk Actions</h6>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary btn-sm" onclick="addFundsToAll(100)">Add $100 to All</button>
+                                <button class="btn btn-warning btn-sm" onclick="resetAllFunds()">Reset All Funds</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Users Table -->
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Balance</th>
+                                    <th>Trading Funds</th>
+                                    <th>Staking Funds</th>
+                                    <th>Total Profit</th>
+                                    <th>Registered</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                <!-- Users will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Platform Controls -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="stats-card">
+                    <h5><i class="fas fa-sliders-h me-2"></i>Platform Settings</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Global Profit Rate (%)</label>
+                        <input type="number" class="form-control" id="globalProfit" value="0.7" step="0.1">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Daily Trading Limit ($)</label>
+                        <input type="number" class="form-control" id="dailyLimit" value="50000">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Withdrawal Fee (%)</label>
+                        <input type="number" class="form-control" id="withdrawalFee" value="1.5" step="0.1">
+                    </div>
+                    <button class="btn btn-primary w-100" onclick="updateSystemSettings()">
+                        <i class="fas fa-save me-2"></i>Save Settings
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="stats-card">
+                    <h5><i class="fas fa-chart-line me-2"></i>Platform Statistics</h5>
+                    <div class="platform-stats">
+                        <div class="stat-item">
+                            <span>Total Deposits:</span>
+                            <strong id="totalDeposits">$0</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span>Total Withdrawals:</span>
+                            <strong id="totalWithdrawals">$0</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span>Platform Revenue:</span>
+                            <strong id="platformProfit">$0</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span>Active Sessions:</span>
+                            <strong id="activeSessions">0</strong>
+                        </div>
+                    </div>
+                    <button class="btn btn-info w-100 mt-3" onclick="refreshStats()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh Statistics
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// ==================== ADMIN CONFIGURATION ====================
+const ADMIN_EMAIL = "kaptansinghvr@gmail.com";
+const ADMIN_PASSWORD = "admin123"; // You can change this
+
+// ==================== ADMIN FUNCTIONS ====================
+
+// Show Admin Login Modal
+function showAdminLogin() {
+    // If already logged in as admin, show panel directly
+    if (localStorage.getItem('adminLoggedIn') === 'true' && currentUser && currentUser.email === ADMIN_EMAIL) {
+        showAdminPanel();
+        return;
+    }
+    
+    // Check if current user is the admin
+    if (currentUser && currentUser.email === ADMIN_EMAIL) {
+        // Auto-login for admin email
+        loginAsAdmin();
+    } else {
+        // Show password modal for others
+        new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
+    }
+}
+
+// Admin Login Function
+function loginAsAdmin() {
+    isAdminLoggedIn = true;
+    localStorage.setItem('adminLoggedIn', 'true');
+    showAdminPanel();
+    showNotification('Admin access granted!', 'success');
+}
+
+// Admin Login Form Handler
+document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const password = document.getElementById('adminPassword').value;
+    
+    if (password === ADMIN_PASSWORD) {
+        loginAsAdmin();
+        bootstrap.Modal.getInstance(document.getElementById('adminLoginModal')).hide();
+    } else {
+        showNotification('Invalid admin password!', 'error');
+    }
+});
+
+// Show Admin Panel
+function showAdminPanel() {
+    // Hide other sections
+    document.getElementById('heroSection').style.display = 'none';
+    document.getElementById('dashboardSection').style.display = 'none';
+    
+    // Show admin panel
+    document.getElementById('adminPanel').style.display = 'block';
+    
+    // Update navigation
+    document.getElementById('userSection').style.display = 'none';
+    document.getElementById('userMenu').style.display = 'none';
+    document.getElementById('adminBtn').style.display = 'block';
+    
+    // Load admin data
+    loadAdminData();
+}
+
+// Load Admin Data
+function loadAdminData() {
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    
+    // Update quick stats
+    document.getElementById('totalUsers').textContent = Object.keys(users).length;
+    
+    let totalFunds = 0;
+    let activeTrades = 0;
+    
+    Object.values(users).forEach(user => {
+        totalFunds += (user.balance || 0) + (user.tradingFunds || 0) + (user.stakingFunds || 0);
+        if (user.tradingFunds > 0) activeTrades++;
+    });
+    
+    document.getElementById('totalFunds').textContent = '$' + totalFunds.toFixed(2);
+    document.getElementById('activeTrades').textContent = activeTrades;
+    document.getElementById('pendingWithdrawals').textContent = '0'; // You can implement this
+    
+    // Update admin info
+    document.getElementById('adminUserInfo').textContent = `Admin: ${currentUser ? currentUser.name : 'kaptansinghvr@gmail.com'}`;
+    
+    // Populate users table
+    const usersTable = document.getElementById('usersTable');
+    usersTable.innerHTML = '';
+    
+    Object.values(users).forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td>$${(user.balance || 0).toFixed(2)}</td>
+            <td>$${(user.tradingFunds || 0).toFixed(2)}</td>
+            <td>$${(user.stakingFunds || 0).toFixed(2)}</td>
+            <td class="${(user.totalProfit || 0) >= 0 ? 'text-success' : 'text-danger'}">$${(user.totalProfit || 0).toFixed(2)}</td>
+            <td>${user.registrationDate || 'N/A'}</td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-success" onclick="addFundsToSpecificUser('${user.email}', 100)" title="Add $100">
+                        <i class="fas fa-plus"></i> 100
+                    </button>
+                    <button class="btn btn-primary" onclick="addFundsToSpecificUser('${user.email}', 500)" title="Add $500">
+                        <i class="fas fa-plus"></i> 500
+                    </button>
+                    <button class="btn btn-warning" onclick="addFundsToSpecificUser('${user.email}', 1000)" title="Add $1000">
+                        <i class="fas fa-plus"></i> 1K
+                    </button>
+                    <button class="btn btn-danger" onclick="resetUserFunds('${user.email}')" title="Reset Funds">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        usersTable.appendChild(row);
+    });
+}
+
+// Add Funds to Specific User
+function addFundsToSpecificUser(email, amount) {
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    if (users[email]) {
+        users[email].balance = (users[email].balance || 0) + amount;
+        localStorage.setItem('users', JSON.stringify(users));
+        
+        // Update current user if they are online
+        if (currentUser && currentUser.email === email) {
+            availableBalance += amount;
+            updateUserInfo();
+        }
+        
+        loadAdminData();
+        showNotification(`✅ Added $${amount} to ${email}`, 'success');
+    } else {
+        showNotification('❌ User not found!', 'error');
+    }
+}
+
+// Add Funds to User (from form)
+function addFundsToUser() {
+    const email = document.getElementById('userEmail').value.trim();
+    const amount = parseFloat(document.getElementById('fundAmount').value);
+    
+    if (!email || !amount || amount <= 0) {
+        showNotification('❌ Please enter valid email and amount!', 'error');
+        return;
+    }
+    
+    addFundsToSpecificUser(email, amount);
+    
+    // Clear form
+    document.getElementById('userEmail').value = '';
+    document.getElementById('fundAmount').value = '';
+}
+
+// Add Funds to All Users
+function addFundsToAll(amount) {
+    if (!confirm(`Add $${amount} to ALL users?`)) return;
+    
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    Object.keys(users).forEach(email => {
+        users[email].balance = (users[email].balance || 0) + amount;
+    });
+    
+    localStorage.setItem('users', JSON.stringify(users));
+    loadAdminData();
+    showNotification(`✅ Added $${amount} to all users`, 'success');
+}
+
+// Reset User Funds
+function resetUserFunds(email) {
+    if (!confirm(`Reset all funds for ${email}?`)) return;
+    
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    if (users[email]) {
+        users[email].balance = 0;
+        users[email].tradingFunds = 0;
+        users[email].stakingFunds = 0;
+        users[email].totalProfit = 0;
+        localStorage.setItem('users', JSON.stringify(users));
+        loadAdminData();
+        showNotification(`✅ Reset funds for ${email}`, 'success');
+    }
+}
+
+// Reset All Funds
+function resetAllFunds() {
+    if (!confirm('Reset ALL user funds? This cannot be undone!')) return;
+    
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    Object.keys(users).forEach(email => {
+        users[email].balance = 0;
+        users[email].tradingFunds = 0;
+        users[email].stakingFunds = 0;
+        users[email].totalProfit = 0;
+    });
+    
+    localStorage.setItem('users', JSON.stringify(users));
+    loadAdminData();
+    showNotification('✅ All user funds reset!', 'success');
+}
+
+// Update System Settings
+function updateSystemSettings() {
+    const profit = document.getElementById('globalProfit').value;
+    const limit = document.getElementById('dailyLimit').value;
+    const fee = document.getElementById('withdrawalFee').value;
+    
+    localStorage.setItem('globalProfit', profit);
+    localStorage.setItem('dailyLimit', limit);
+    localStorage.setItem('withdrawalFee', fee);
+    
+    showNotification('✅ System settings updated!', 'success');
+}
+
+// Refresh Statistics
+function refreshStats() {
+    loadAdminData();
+    showNotification('✅ Statistics refreshed!', 'success');
+}
+
+// Logout Admin
+function logoutAdmin() {
+    isAdminLoggedIn = false;
+    localStorage.removeItem('adminLoggedIn');
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('adminBtn').style.display = 'none';
+    
+    if (currentUser && currentUser.email === ADMIN_EMAIL) {
+        // If admin user, show normal dashboard
+        showDashboard();
+    } else {
+        // If other admin, show hero section
+        document.getElementById('heroSection').style.display = 'flex';
+        document.getElementById('userSection').style.display = 'block';
+    }
+    
+    showNotification('🔒 Admin logged out!', 'success');
+}
+
+// ==================== AUTO-ADMIN SETUP ====================
+
+// Check if user is admin and show admin button
+function checkAdminStatus() {
+    if (currentUser && currentUser.email === ADMIN_EMAIL) {
+        document.getElementById('adminBtn').style.display = 'block';
+    } else {
+        document.getElementById('adminBtn').style.display = 'none';
+    }
+}
+
+// Auto-login for admin email
+function setupAutoAdmin() {
+    if (currentUser && currentUser.email === ADMIN_EMAIL) {
+        // Auto-show admin button for admin email
+        document.getElementById('adminBtn').style.display = 'block';
+        
+        // Auto-login to admin if previously logged in
+        if (localStorage.getItem('adminLoggedIn') === 'true') {
+            showAdminPanel();
+        }
+    }
+}
+
+// Initialize admin features when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    setupAutoAdmin();
+});
+
+// Global admin function for console access
+window.adminAddFunds = function(email, amount) {
+    return addFundsToSpecificUser(email, amount);
+};
+</script>
+
+<style>
+.stats-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.stats-card.bg-primary { background: linear-gradient(135deg, #007bff, #0056b3) !important; }
+.stats-card.bg-success { background: linear-gradient(135deg, #28a745, #1e7e34) !important; }
+.stats-card.bg-warning { background: linear-gradient(135deg, #ffc107, #e0a800) !important; }
+.stats-card.bg-info { background: linear-gradient(135deg, #17a2b8, #138496) !important; }
+
+.platform-stats .stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.table-dark {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table-dark th {
+    border: none;
+    background: rgba(0, 188, 212, 0.3);
+    padding: 15px 10px;
+}
+
+.table-dark td {
+    border-color: rgba(255, 255, 255, 0.1);
+    padding: 12px 10px;
+    vertical-align: middle;
+}
+
+.btn-group-sm .btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+}
+</style>
