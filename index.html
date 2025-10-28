@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>China Industry Crypto Trading - Real Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #1a237e;
+            --secondary: #00bcd4;
+            --accent: #ff4081;
+            --dark: #121212;
+            --light: #f5f5f5;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0f1d 0%, #1a237e 100%);
+            color: var(--light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: rgba(18, 18, 18, 0.95) !important;
+            backdrop-filter: blur(15px);
+            border-bottom: 2px solid var(--secondary);
+            padding: 15px 0;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--secondary) !important;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><path d="M0,0 L800,400 L1200,0 L1200,800 L0,800 Z" fill="rgba(0,188,212,0.1)"/></svg>');
+            background-size: cover;
+        }
+        
+        .crypto-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        /* Login Container */
+        .login-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Dashboard */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+        
+        .wallet-card {
+            background: linear-gradient(135deg, #1a237e, #00bcd4);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stats-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Trading View */
+        .trading-view {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            height: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Staking Plans */
+        .staking-plan {
+            background: linear-gradient(135deg, rgba(26, 35, 126, 0.3), rgba(0, 188, 212, 0.3));
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .staking-plan:hover {
+            transform: scale(1.02);
+            border-color: var(--secondary);
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 188, 212, 0.3);
+        }
+        
+        /* Forms */
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 10px;
+            padding: 12px 15px;
+        }
+        
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--secondary);
+            color: white;
+            box-shadow: 0 0 0 0.25rem rgba(0, 188, 212, 0.25);
+        }
+        
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Portfolio Value */
+        .portfolio-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00bcd4, #ff4081);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 188, 212, 0.5);
+        }
+        
+        /* Risk Selector */
+        .risk-selector {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .risk-option {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .risk-option.active {
+            background: rgba(0, 188, 212, 0.2);
+            border-color: var(--secondary);
+        }
+        
+        .risk-option.low { border-left: 4px solid var(--success); }
+        .risk-option.medium { border-left: 4px solid var(--warning); }
+        .risk-option.high { border-left: 4px solid var(--danger); }
+        
+        /* Price Ticker */
+        .price-ticker {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .ticker-content {
+            display: flex;
+            animation: ticker 30s linear infinite;
+        }
+        
+        @keyframes ticker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .ticker-item {
+            padding: 0 30px;
+            white-space: nowrap;
+        }
+        
+        /* Footer */
+        .footer {
+            background: rgba(18, 18, 18, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px 0 20px;
+        }
+        
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-rocket me-2"></i>
+                China Industry Crypto Trading
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div id="userSection">
+                    <button class="btn btn-outline-light me-2" onclick="showLogin()">Login</button>
+                    <button class="btn btn-primary" onclick="showRegister()">Sign Up</button>
+                </div>
+                <div id="userMenu" style="display: none;">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-2"></i>
+                            <span id="userName">User</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" href="#" onclick="showDashboard()"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showProfile()"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showWallet()"><i class="fas fa-wallet me-2"></i>Wallet</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Login -->
+    <section class="hero-section" id="heroSection">
+        <div class="crypto-bg"></div>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4 floating">Advanced AI Crypto Trading Platform</h1>
+                    <p class="lead mb-4">Maximize your crypto investments with our cutting-edge AI trading bots, staking plans, and mining options. Join thousands of successful traders today.</p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <button class="btn btn-primary btn-lg" onclick="showRegister()">
+                            <i class="fas fa-rocket me-2"></i>Start Earning Now
+                        </button>
+                        <button class="btn btn-outline-light btn-lg" onclick="showLogin()">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="login-container" id="loginContainer">
+                        <h3 class="text-center mb-4">Welcome to Your Future</h3>
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="loginEmail" placeholder="Enter your email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 mb-3">Login to Dashboard</button>
+                        </form>
+                        <div class="text-center">
+                            <a href="#" class="text-decoration-none" onclick="showResetPassword()">Forgot Password?</a>
+                        </div>
+                    </div>
+
+                    <div class="login-container" id="registerContainer" style="display: none;">
+                        <h3 class="text-center mb-4">Start Your Journey</h3>
+                        <form id="registerForm">
+                            <div class="mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="regName" placeholder="Enter your full name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="regEmail" placeholder="Enter your email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" id="regPassword" placeholder="Create a password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="regConfirmPassword" placeholder="Confirm your password" required>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                                <label class="form-check-label" for="agreeTerms">I agree to the Terms & Conditions</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section class="dashboard container-fluid" id="dashboardSection">
+        <div class="container">
+            <!-- Portfolio Overview -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="wallet-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h4 class="text-white">Total Portfolio Value</h4>
+                                <div class="portfolio-value" id="portfolioValue">$67,318.45</div>
+                                <div class="text-success" id="dailyPnl">+$2,367.45 Today</div>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <button class="btn btn-light me-2" onclick="showDeposit()"><i class="fas fa-plus me-2"></i>Deposit</button>
+                                <button class="btn btn-outline-light" onclick="showWithdraw()"><i class="fas fa-download me-2"></i>Withdraw</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary rounded-circle p-3 me-3">
+                                <i class="fas fa-wallet fa-2x text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Available Balance</h6>
+                                <h4 class="mb-0 text-success" id="availableBalance">$15,284.67</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-warning rounded-circle p-3 me-3">
+                                <i class="fas fa-chart-line fa-2x text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Trading Funds</h6>
+                                <h4 class="mb-0 text-warning" id="tradingFunds">$32,567.89</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-success rounded-circle p-3 me-3">
+                                <i class="fas fa-coins fa-2x text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Staking Funds</h6>
+                                <h4 class="mb-0 text-success" id="stakingFunds">$19,465.89</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-info rounded-circle p-3 me-3">
+                                <i class="fas fa-gem fa-2x text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Total Profit</h6>
+                                <h4 class="mb-0 text-info" id="totalProfit">$8,742.33</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trading & Staking Section -->
+            <div class="row">
+                <!-- AI Trading -->
+                <div class="col-lg-6 mb-4">
+                    <div class="stats-card">
+                        <h4 class="mb-4"><i class="fas fa-robot me-2"></i>AI Trading Bot</h4>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Select AI Model</label>
+                            <select class="form-select" id="aiModel">
+                                <option value="deepseek">DeepSeek AI</option>
+                                <option value="qwen">Qwen AI</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Trading Amount ($)</label>
+                            <input type="number" class="form-control" id="tradingAmount" placeholder="Enter amount" min="10">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Select Risk Level</label>
+                            <div class="risk-selector">
+                                <div class="risk-option low active" onclick="selectRisk('low')">
+                                    <i class="fas fa-shield-alt fa-2x mb-2 text-success"></i>
+                                    <div>Low Risk</div>
+                                    <small>Conservative</small>
+                                </div>
+                                <div class="risk-option medium" onclick="selectRisk('medium')">
+                                    <i class="fas fa-balance-scale fa-2x mb-2 text-warning"></i>
+                                    <div>Medium Risk</div>
+                                    <small>Balanced</small>
+                                </div>
+                                <div class="risk-option high" onclick="selectRisk('high')">
+                                    <i class="fas fa-bolt fa-2x mb-2 text-danger"></i>
+                                    <div>High Risk</div>
+                                    <small>Aggressive</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary w-100" onclick="startAITrading()">
+                            <i class="fas fa-play me-2"></i>Start AI Trading
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Staking Plans -->
+                <div class="col-lg-6 mb-4">
+                    <div class="stats-card">
+                        <h4 class="mb-4"><i class="fas fa-coins me-2"></i>Staking Plans</h4>
+                        
+                        <div class="staking-plan">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <h5>Basic Plan</h5>
+                                    <p class="mb-1">$10 - $49</p>
+                                    <small class="text-success">0.1% Daily | 3% Monthly</small>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <button class="btn btn-sm btn-primary" onclick="selectStakingPlan('basic')">Select</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="staking-plan">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <h5>Silver Plan</h5>
+                                    <p class="mb-1">$50 - $99</p>
+                                    <small class="text-success">0.2% Daily | 6% Monthly</small>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <button class="btn btn-sm btn-primary" onclick="selectStakingPlan('silver')">Select</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="staking-plan">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <h5>Gold Plan</h5>
+                                    <p class="mb-1">$100 - $499</p>
+                                    <small class="text-success">0.3% Daily | 9% Monthly</small>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <button class="btn btn-sm btn-primary" onclick="selectStakingPlan('gold')">Select</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="staking-plan">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <h5>Platinum Plan</h5>
+                                    <p class="mb-1">$500 - $999</p>
+                                    <small class="text-success">0.35% Daily | 10.5% Monthly</small>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <button class="btn btn-sm btn-primary" onclick="selectStakingPlan('platinum')">Select</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="staking-plan">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <h5>Diamond Plan</h5>
+                                    <p class="mb-1">$1000 - $500,000</p>
+                                    <small class="text-success">0.7% Daily | 21% Monthly</small>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <button class="btn btn-sm btn-primary" onclick="selectStakingPlan('diamond')">Select</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trading Chart -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="stats-card">
+                        <h4 class="mb-4"><i class="fas fa-chart-line me-2"></i>Live Trading View</h4>
+                        <div class="trading-view">
+                            <canvas id="tradingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Price Ticker -->
+    <div class="price-ticker">
+        <div class="ticker-content">
+            <div class="ticker-item"><strong>BTC</strong> $45,218.73 <span class="text-success">+2.3%</span></div>
+            <div class="ticker-item"><strong>ETH</strong> $3,125.64 <span class="text-success">+1.8%</span></div>
+            <div class="ticker-item"><strong>BNB</strong> $412.35 <span class="text-danger">-0.5%</span></div>
+            <div class="ticker-item"><strong>XRP</strong> $0.7521 <span class="text-success">+3.2%</span></div>
+            <div class="ticker-item"><strong>ADA</strong> $1.243 <span class="text-success">+1.5%</span></div>
+            <div class="ticker-item"><strong>SOL</strong> $102.47 <span class="text-success">+4.7%</span></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="mb-3"><i class="fas fa-rocket me-2"></i>China Industry Crypto Trading</h5>
+                    <p>Advanced crypto trading platform with AI-powered bots, staking, and mining options for maximum returns.</p>
+                    <div class="mt-4">
+                        <a href="https://t.me/Kaitoreignx" class="social-icon" target="_blank"><i class="fab fa-telegram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/12264939021" class="social-icon" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-decoration-none">Home</a></li>
+                        <li><a href="#" class="text-decoration-none">Features</a></li>
+                        <li><a href="#" class="text-decoration-none">Staking</a></li>
+                        <li><a href="#" class="text-decoration-none">AI Trading</a></li>
+                        <li><a href="#" class="text-decoration-none">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="mb-3">Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-decoration-none">Help Center</a></li>
+                        <li><a href="#" class="text-decoration-none">Contact Us</a></li>
+                        <li><a href="#" class="text-decoration-none">Privacy Policy</a></li>
+                        <li><a href="#" class="text-decoration-none">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 mb-4">
+                    <h5 class="mb-3">Contact Info</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-envelope me-2"></i> support@chinaindustrycrypto.com</li>
+                        <li class="mb-2"><i class="fab fa-telegram me-2"></i> @Kaitoreignx</li>
+                        <li class="mb-2"><i class="fab fa-whatsapp me-2"></i> +1 226-493-9021</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2024 China Industry Crypto Trading. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div class="modal fade" id="depositModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title">Deposit Funds</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Cryptocurrency Deposit</h6>
+                            <p><strong>USDT TRC20:</strong> TN9DDuzXnXirgAAS4mRe8VFQ6VxuVUQmJc</p>
+                            <p><strong>USDT BEP20:</strong> 0x8e57d705f1b58ceda77c91df6ac80aac5c2a83df</p>
+                            <small class="text-warning">Funds will be added automatically after 3 confirmations</small>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>INR Deposit</h6>
+                            <p><strong>UPI ID:</strong> millnerkaptan01@fam</p>
+                            <small class="text-warning">After payment, contact support with UTR number</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // User Data Storage
+        let currentUser = null;
+        let users = JSON.parse(localStorage.getItem('users')) || {};
+        let portfolioValue = 67318.45;
+        let availableBalance = 15284.67;
+        let tradingFunds = 32567.89;
+        let stakingFunds = 19465.89;
+        let totalProfit = 8742.33;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            initializeTradingChart();
+            startPortfolioUpdates();
+        });
+
+        // Check if user is logged in
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showDashboard();
+                updateUserInfo();
+            }
+        }
+
+        // Show Login Form
+        function showLogin() {
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('registerContainer').style.display = 'none';
+        }
+
+        // Show Register Form
+        function showRegister() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('registerContainer').style.display = 'block';
+        }
+
+        // Login Functionality
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (users[email] && users[email].password === password) {
+                currentUser = users[email];
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showDashboard();
+                updateUserInfo();
+                showNotification('Login successful!', 'success');
+            } else {
+                showNotification('Invalid email or password!', 'error');
+            }
+        });
+
+        // Register Functionality
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showNotification('Passwords do not match!', 'error');
+                return;
+            }
+
+            if (users[email]) {
+                showNotification('Email already registered!', 'error');
+                return;
+            }
+
+            users[email] = {
+                name: name,
+                email: email,
+                password: password,
+                registrationDate: new Date().toLocaleDateString(),
+                lastSeen: new Date().toLocaleString(),
+                balance: 0,
+                tradingFunds: 0,
+                stakingFunds: 0,
+                totalProfit: 0
+            };
+
+            localStorage.setItem('users', JSON.stringify(users));
+            showNotification('Registration successful! Please login.', 'success');
+            showLogin();
+        });
+
+        // Show Dashboard
+        function showDashboard() {
+            document.getElementById('heroSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            document.getElementById('userSection').style.display = 'none';
+            document.getElementById('userMenu').style.display = 'block';
+        }
+
+        // Update User Info
+        function updateUserInfo() {
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('availableBalance').textContent = '$' + availableBalance.toFixed(2);
+                document.getElementById('tradingFunds').textContent = '$' + tradingFunds.toFixed(2);
+                document.getElementById('stakingFunds').textContent = '$' + stakingFunds.toFixed(2);
+                document.getElementById('totalProfit').textContent = '$' + totalProfit.toFixed(2);
+            }
+        }
+
+        // Logout
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            document.getElementById('heroSection').style.display = 'flex';
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('userSection').style.display = 'block';
+            document.getElementById('userMenu').style.display = 'none';
+            showNotification('Logged out successfully!', 'success');
+        }
+
+        // Risk Selection
+        function selectRisk(risk) {
+            document.querySelectorAll('.risk-option').forEach(opt => opt.classList.remove('active'));
+            document.querySelector(`.risk-option.${risk}`).classList.add('active');
+        }
+
+        // Start AI Trading
+        function startAITrading() {
+            const amount = parseFloat(document.getElementById('tradingAmount').value);
+            const model = document.getElementById('aiModel').value;
+            const risk = document.querySelector('.risk-option.active').classList[1];
+
+            if (!amount || amount < 10) {
+                showNotification('Please enter a valid amount (minimum $10)', 'error');
+                return;
+            }
+
+            if (amount > availableBalance) {
+                showNotification('Insufficient balance!', 'error');
+                return;
+            }
+
+            availableBalance -= amount;
+            tradingFunds += amount;
+            updateUserInfo();
+            
+            showNotification(`AI Trading started with $${amount} (${model}, ${risk} risk)`, 'success');
+        }
+
+        // Staking Plan Selection
+        function selectStakingPlan(plan) {
+            const plans = {
+                basic: { min: 10, max: 49, daily: 0.1, monthly: 3 },
+                silver: { min: 50, max: 99, daily: 0.2, monthly: 6 },
+                gold: { min: 100, max: 499, daily: 0.3, monthly: 9 },
+                platinum: { min: 500, max: 999, daily: 0.35, monthly: 10.5 },
+                diamond: { min: 1000, max: 500000, daily: 0.7, monthly: 21 }
+            };
+
+            const selectedPlan = plans[plan];
+            const amount = parseFloat(prompt(`Enter staking amount ($${selectedPlan.min} - $${selectedPlan.max}):`));
+
+            if (!amount || amount < selectedPlan.min || amount > selectedPlan.max) {
+                showNotification(`Please enter amount between $${selectedPlan.min} and $${selectedPlan.max}`, 'error');
+                return;
+            }
+
+            if (amount > availableBalance) {
+                showNotification('Insufficient balance!', 'error');
+                return;
+            }
+
+            availableBalance -= amount;
+            stakingFunds += amount;
+            updateUserInfo();
+
+            showNotification(`Staking plan activated: $${amount} at ${selectedPlan.daily}% daily return`, 'success');
+        }
+
+        // Show Deposit Modal
+        function showDeposit() {
+            new bootstrap.Modal(document.getElementById('depositModal')).show();
+        }
+
+        // Show Withdraw
+        function showWithdraw() {
+            const amount = parseFloat(prompt('Enter withdrawal amount:'));
+            if (amount && amount > 0 && amount <= availableBalance) {
+                showNotification(`Withdrawal request submitted for $${amount}. Processing time: 24 hours.`, 'success');
+            } else {
+                showNotification('Invalid withdrawal amount!', 'error');
+            }
+        }
+
+        // Initialize Trading Chart
+        function initializeTradingChart() {
+            const ctx = document.getElementById('tradingChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'],
+                    datasets: [{
+                        label: 'Portfolio Value',
+                        data: [65000, 65200, 65500, 65300, 65800, 66200, 66700, 67318],
+                        borderColor: '#00bcd4',
+                        backgroundColor: 'rgba(0, 188, 212, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.7)' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: 'rgba(255,255,255,0.7)' } }
+                    }
+                }
+            });
+        }
+
+        // Portfolio Updates
+        function startPortfolioUpdates() {
+            setInterval(() => {
+                // Update portfolio value
+                const change = (Math.random() - 0.3) * 150;
+                portfolioValue += change;
+                document.getElementById('portfolioValue').textContent = '$' + portfolioValue.toFixed(2);
+                
+                // Update P&L
+                const pnlChange = (Math.random() - 0.4) * 50;
+                const currentPnl = parseFloat(document.getElementById('dailyPnl').textContent.replace(/[^\d.-]/g, ''));
+                const newPnl = Math.max(0, currentPnl + pnlChange);
+                document.getElementById('dailyPnl').textContent = '+$' + newPnl.toFixed(2) + ' Today';
+                document.getElementById('dailyPnl').className = newPnl >= 0 ? 'text-success' : 'text-danger';
+                
+            }, 3000);
+        }
+
+        // Notification System
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'error' ? 'danger' : 'success'} position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Admin Functions (for you)
+        function addFundsToUser(email, amount) {
+            if (users[email]) {
+                users[email].balance += amount;
+                localStorage.setItem('users', JSON.stringify(users));
+                if (currentUser && currentUser.email === email) {
+                    availableBalance += amount;
+                    updateUserInfo();
+                }
+                return true;
+            }
+            return false;
+        }
+
+        // Export admin function to global scope
+        window.addFundsToUser = addFundsToUser;
+    </script>
+</body>
+</html>
